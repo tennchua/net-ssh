@@ -190,7 +190,6 @@ Gem::Specification.new do |s|
   s.licenses = ["MIT"]
   s.rubyforge_project = "net-ssh"
   s.rubygems_version = "2.4.6"
-  s.signing_key = "/mnt/gem/net-ssh-private_key.pem"
   s.summary = "Net::SSH: a pure-Ruby implementation of the SSH2 client protocol."
 
   if s.respond_to? :specification_version then
