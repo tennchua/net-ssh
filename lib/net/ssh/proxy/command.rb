@@ -68,23 +68,26 @@ module Net; module SSH; module Proxy
       @command_line = command_line
       class << io
         def send(data, flag)
-          tries = 0
           begin
-            write_nonblock(data)
-          rescue IO::EAGAINWaitWritable
-            sleep 0.01
-            retry unless tries > 1
+            result = write_nonblock(data)
+          rescue IO::WaitWritable, Errno::EINTR, IO::EAGAINWaitWritable
+            IO.select(nil, [self])
+            retry
           end
+          result
         end
 
         def recv(size)
-          tries = 0
           begin
-            read_nonblock(data)
-          rescue IO::EAGAINWaitReadable
-            sleep 0.01
-            retry unless tries > 1
+            result = read_nonblock(size)
+          rescue IO::WaitReadable, Errno::EINTR, IO::EAGAINWaitReadable
+            timeout_in_seconds = 1
+            if IO.select([self], nil, [self], timeout_in_seconds) == nil
+              raise "Unexpected spurious read wakeup"
+            end
+            retry
           end
+          result
         end
       end
       io
