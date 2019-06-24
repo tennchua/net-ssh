@@ -81,7 +81,7 @@ module Net; module SSH; module Proxy
           tries = 0
           begin
             read_nonblock(data)
-          rescue IO::EAGAINWaitWritable
+          rescue IO::EAGAINWaitReadable
             sleep 0.01
             retry unless tries > 1
           end
