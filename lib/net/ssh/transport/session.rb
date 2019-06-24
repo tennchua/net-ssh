@@ -67,8 +67,7 @@ module Net; module SSH; module Transport
         if (factory = options[:proxy])
           factory.open(@host, @port, options)
         else
-          Socket.tcp(@host, @port, @bind_address, nil,
-                     connect_timeout: options[:timeout])
+          Socket.tcp(@host, @port, @bind_address, nil)
         end
 
       @socket.extend(PacketStream)
