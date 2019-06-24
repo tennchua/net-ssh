@@ -66,29 +66,29 @@ module Net; module SSH; module Proxy
         raise ConnectError, "#{e}: #{command_line}"
       end
       @command_line = command_line
-      class << io
-        def send(data, flag)
-          tries = 0
-          begin
-            result = write_nonblock(data)
-          rescue IO::WaitWritable, Errno::EINTR
-            IO.select(nil, [self])
-            retry unless tries > 1
-          end
-          result
+      def io.send(data, flag)
+        begin
+          result = write_nonblock(data)
+        rescue IO::WaitWritable, Errno::EINTR
+          IO.select(nil, [self])
+          retry
         end
-
-        def recv(size)
-          tries = 0
-          begin
-            result = read_nonblock(size)
-          rescue IO::WaitReadable, Errno::EINTR
-            IO.select([self])
-            retry unless tries > 1
-          end
-          result
-        end
+        result
       end
+
+      def io.recv(size)
+        begin
+          result = read_nonblock(size)
+        rescue IO::WaitReadable, Errno::EINTR
+          timeout_in_seconds = 20
+          if IO.select([self], nil, [self], timeout_in_seconds) == nil
+            raise "Unexpected spurious read wakeup"
+          end
+          retry
+        end
+        result
+      end
+
       io
     end
   end
