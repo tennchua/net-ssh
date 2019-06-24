@@ -68,22 +68,18 @@ module Net; module SSH; module Proxy
       @command_line = command_line
       class << io
         def send(data, flag)
-         tries = 0
          begin
            write_nonblock(data)
          rescue IO::EAGAINWaitWritable
-           sleep 0.01
-           retry unless tries > 1
+           # do nothing for now
          end
         end
 
         def recv(size)
-          tries = 0
           begin
             read_nonblock(size)
           rescue IO::EAGAINWaitReadable
-            sleep 0.01
-            retry unless tries > 1
+            # do nothing for now
           end
         end
       end
