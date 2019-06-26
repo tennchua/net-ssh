@@ -214,6 +214,9 @@ module Net; module SSH; module Transport
       # communicating with this server.
       def prepare_preferred_algorithms!
         options[:compression] = %w(zlib@openssh.com zlib) if options[:compression] == true
+        
+        # remove all ecd*
+        ALGORITHMS.values.each { |algs| algs.reject! { |a| a =~ /^ecd(sa|h)-sha2/ } }
 
         ALGORITHMS.each do |algorithm, list|
           algorithms[algorithm] = list.dup

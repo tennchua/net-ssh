@@ -34,6 +34,9 @@ module Net; module SSH
       # Searches all known host files (see KnownHosts.hostfiles) for all keys
       # of the given host. Returns an array of keys found.
       def search_for(host, options={})
+        # remove all ecd*
+        SUPPORTED_TYPE.reject! { |t| t =~ /^ecd(sa|h)-sha2/ }
+
         search_in(hostfiles(options), host)
       end
 
